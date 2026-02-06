@@ -1,8 +1,8 @@
 import pytest
 import requests
-from Modul_4.Cinescope.constants import BASE_URL, HEADERS, REGISTER_ENDPOINT,  LOGIN_ENDPOINT
-from Modul_4.Cinescope.custom_requester.custom_requester import CustomRequester
-from Modul_4.Cinescope.api.api_manager import ApiManager
+from Cinescope.constants import BASE_URL, HEADERS, REGISTER_ENDPOINT,  LOGIN_ENDPOINT
+from Cinescope.custom_requester.custom_requester import CustomRequester
+from Cinescope.api.api_manager import ApiManager
 
 class TestAuthAPI:
     def test_register_user(self, api_manager: ApiManager, test_user):

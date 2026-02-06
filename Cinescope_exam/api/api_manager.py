@@ -1,5 +1,5 @@
-from clients.auth_api import AuthAPI
-from clients.user_api import UserAPI
+from Cinescope.clients.auth_api import AuthAPI
+from Cinescope.clients.user_api import UserAPI
 
 class ApiManager:
     """

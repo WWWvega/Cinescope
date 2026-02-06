@@ -1,4 +1,3 @@
-
 import json
 import requests
 import logging
@@ -14,6 +13,11 @@ class CustomRequester:
     }
 
     def __init__(self, session, base_url):
+        """
+        Инициализация кастомного реквестера.
+        :param session: Объект requests.Session.
+        :param base_url: Базовый URL API.
+        """
         self.session = session
         self.base_url = base_url
         self.headers = self.base_headers.copy()
@@ -38,7 +42,19 @@ class CustomRequester:
             raise ValueError(f"Unexpected status code: {response.status_code}. Expected: {expected_status}")
         return response
 
+    def _update_session_headers(self, **kwargs):
+        """
+        Обновление заголовков сессии.
+        :param kwargs: Дополнительные заголовки.
+        """
+        self.headers.update(kwargs)
+        self.session.headers.update(self.headers)
+
     def log_request_and_response(self, response):
+        """
+        Логирование запросов и ответов.
+        :param response: Объект ответа requests.Response.
+        """
         try:
             request = response.request
             GREEN = '\033[32m'
@@ -53,6 +69,7 @@ class CustomRequester:
                     body = request.body.decode('utf-8')
                 body = f"-d '{body}' \n" if body != '{}' else ''
 
+            # Логируем запрос
             self.logger.info(f"\n{'=' * 40} REQUEST {'=' * 40}")
             self.logger.info(
                 f"{GREEN}{full_test_name}{RESET}\n"
@@ -61,32 +78,29 @@ class CustomRequester:
                 f"{body}"
             )
 
+            # Обрабатываем ответ
+            response_status = response.status_code
+            is_success = response.ok
             response_data = response.text
+
+            # Попытка форматировать JSON
             try:
                 response_data = json.dumps(json.loads(response.text), indent=4, ensure_ascii=False)
             except json.JSONDecodeError:
-                pass
+                pass  # Оставляем текст, если это не JSON
 
+            # Логируем ответ
             self.logger.info(f"\n{'=' * 40} RESPONSE {'=' * 40}")
-            if not response.ok:
+            if not is_success:
                 self.logger.info(
-                    f"\tSTATUS_CODE: {RED}{response.status_code}{RESET}\n"
+                    f"\tSTATUS_CODE: {RED}{response_status}{RESET}\n"
                     f"\tDATA: {RED}{response_data}{RESET}"
                 )
             else:
                 self.logger.info(
-                    f"\tSTATUS_CODE: {GREEN}{response.status_code}{RESET}\n"
+                    f"\tSTATUS_CODE: {GREEN}{response_status}{RESET}\n"
                     f"\tDATA:\n{response_data}"
                 )
             self.logger.info(f"{'=' * 80}\n")
         except Exception as e:
             self.logger.error(f"\nLogging failed: {type(e)} - {e}")
-
-    def _update_session_headers(self, **kwargs):
-        """
-        Обновление заголовков сессии.
-        :param session: Объект requests.Session, предоставленный API-классом.
-        :param kwargs: Дополнительные заголовки.
-        """
-        self.headers.update(kwargs)  # Обновляем базовые заголовки
-        self.session.headers.update(self.headers)  # Обновляем заголовки в текущей сессии
