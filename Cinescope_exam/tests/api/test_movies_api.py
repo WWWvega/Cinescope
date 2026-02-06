@@ -24,7 +24,7 @@ class TestMovies:
         movie = response.json()
         assert movie["id"] == movie_id, "ID фильма не совпадает"
 
-    def test_create_movie(self, api_manager):
+    def test_create_movie(self, admin_api):
         """POST /movies — проверка создания фильма"""
         movie_data = {
             "name": faker.sentence(nb_words=3),
@@ -35,7 +35,7 @@ class TestMovies:
             "published": True,
             "genreId": 1
         }
-        response = api_manager.movies_api.requester.send_request(
+        response = admin_api.movies_api.requester.send_request(
             "POST",
             "movies",
             data=movie_data,
