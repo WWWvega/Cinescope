@@ -2,10 +2,9 @@
 from faker import Faker
 import pytest
 import requests
-from Cinescope_exam.constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT
 from Cinescope_exam.custom_requester.custom_requester import CustomRequester
 from Cinescope_exam.utils.data_generator import DataGenerator
-from Cinescope_exam.constants import ADMIN_USERNAME, ADMIN_PASSWORD
+from Cinescope_exam.constants import BASE_URL, API_BASE_URL, ADMIN_USERNAME, ADMIN_PASSWORD, LOGIN_ENDPOINT
 from Cinescope_exam.api.api_manager import ApiManager
 
 faker = Faker()
@@ -53,9 +52,16 @@ def session():
 
 @pytest.fixture(scope="session")
 def api_manager(session):
-    """
-    Фикстура для создания экземпляра ApiManager.
-    """
+    resp = session.post(f"{BASE_URL}{LOGIN_ENDPOINT}", json={
+        "email": ADMIN_USERNAME,
+        "password": ADMIN_PASSWORD
+    })
+    print("LOGIN RESPONSE:", resp.json())
+    assert resp.status_code == 200, f"Ошибка логина: {resp.text}"
+    token = resp.json().get("accessToken") or resp.json().get("token") or resp.json().get("access_token")
+    if not token:
+        raise ValueError(f"Токен не найден! Ответ: {resp.json()}")
+    session.headers.update({"Authorization": f"Bearer {token}"})
     return ApiManager(session)
 
 

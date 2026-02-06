@@ -8,7 +8,7 @@ class AuthAPI(CustomRequester):
       """
 
     def __init__(self, session):
-        super().__init__(session=session, base_url=API_BASE_URL)
+        super().__init__(session=session, base_url=BASE_URL)
 
     def register_user(self, user_data, expected_status=201):
         """
