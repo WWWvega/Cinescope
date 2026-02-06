@@ -7,7 +7,7 @@ class UserAPI(CustomRequester):
     """
 
     def __init__(self, session):
-        super().__init__(session=session, base_url=BASE_URL)
+        super().__init__(session=session, base_url=API_BASE_URL)
         self.session = session
 
     def get_user_info(self, user_id, expected_status=200):
