@@ -4,8 +4,8 @@ HEADERS = {
     "Accept": "application/json"
 }
 
-LOGIN_ENDPOINT = "/login"
-REGISTER_ENDPOINT = "/register"
+MOVIES_ENDPOINT = "/movies"
+MOVIE_ID_ENDPOINT = "/movies/{id}"
 
 ADMIN_USERNAME = "api1@gmail.com"
 ADMIN_PASSWORD = "asdqwe123Q"
