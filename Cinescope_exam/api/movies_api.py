@@ -1,10 +1,10 @@
 from typing import Dict, Any, Optional
 from Cinescope_exam.custom_requester.custom_requester import CustomRequester
-
+from Cinescope_exam.constants import API_BASE_URL
 
 class MoviesAPI:
     def __init__(self, session):
-        self.requester = CustomRequester(session=session)
+        self.requester = CustomRequester(session=session, base_url=API_BASE_URL)
 
     def get_movies(self, params: Optional[Dict] = None) -> Dict[str, Any]:
         response = self.requester.request("GET", "/movies", params=params)

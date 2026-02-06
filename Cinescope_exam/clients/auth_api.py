@@ -1,6 +1,6 @@
 
 from Cinescope_exam.custom_requester.custom_requester import CustomRequester
-from Cinescope_exam.constants import BASE_URL, LOGIN_ENDPOINT, REGISTER_ENDPOINT
+from Cinescope_exam.constants import BASE_URL, API_BASE_URL, LOGIN_ENDPOINT, REGISTER_ENDPOINT
 
 class AuthAPI(CustomRequester):
     """
