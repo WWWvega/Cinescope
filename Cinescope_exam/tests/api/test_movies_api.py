@@ -10,7 +10,7 @@ class TestMovies:
         """GET /movies — проверка получения списка фильмов"""
         response = api_manager.movies_api.get_movies()
         assert response.status_code == 200, f"Ошибка: {response.text}"
-        data = response.json()
+        data = api_manager.movies_api.get_movies()
         assert "movies" in data, "Отсутствует ключ 'movies'"
 
     def test_get_movie_by_id(self, api_manager):

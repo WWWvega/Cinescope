@@ -1,5 +1,6 @@
-from Cinescope.clients.auth_api import AuthAPI
-from Cinescope.clients.user_api import UserAPI
+from Cinescope_exam.clients.auth_api import AuthAPI
+from Cinescope_exam.clients.user_api import UserAPI
+from Cinescope_exam.api.movies_api import MoviesAPI
 
 class ApiManager:
     """
@@ -13,4 +14,4 @@ class ApiManager:
         self.session = session
         self.auth_api = AuthAPI(session)
         self.user_api = UserAPI(session)
-        self.movies_api = MovieAPI(session)
+        self.movies_api = MoviesAPI(session)

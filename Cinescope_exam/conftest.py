@@ -2,11 +2,11 @@
 from faker import Faker
 import pytest
 import requests
-from Cinescope.constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT
-from Cinescope.custom_requester.custom_requester import CustomRequester
-from Cinescope.utils.data_generator import DataGenerator
-from Cinescope.constants import ADMIN_USERNAME, ADMIN_PASSWORD
-from Cinescope.api.api_manager import ApiManager
+from Cinescope_exam.constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT
+from Cinescope_exam.custom_requester.custom_requester import CustomRequester
+from Cinescope_exam.utils.data_generator import DataGenerator
+from Cinescope_exam.constants import ADMIN_USERNAME, ADMIN_PASSWORD
+from Cinescope_exam.api.api_manager import ApiManager
 
 faker = Faker()
 

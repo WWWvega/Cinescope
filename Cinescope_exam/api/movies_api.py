@@ -1,10 +1,10 @@
 from typing import Dict, Any, Optional
-from Cinescope.custom_requester.custom_requester import CustomRequester
+from Cinescope_exam.custom_requester.custom_requester import CustomRequester
 
 
 class MoviesAPI:
-    def __init__(self):
-        self.requester = CustomRequester()
+    def __init__(self, session):
+        self.requester = CustomRequester(session=session)
 
     def get_movies(self, params: Optional[Dict] = None) -> Dict[str, Any]:
         response = self.requester.request("GET", "/movies", params=params)
@@ -19,7 +19,7 @@ class MoviesAPI:
         return response.json()
 
     def update_movie(self, movie_id: int, movie_data: Dict) -> Dict[str, Any]:
-        response = self.requester.request("PUT", f"/movies/{movie_id}", json=movie_data)
+        response = self.requester.request("PATCH", f"/movies/{movie_id}", json=movie_data)
         return response.json()
 
     def delete_movie(self, movie_id: int) -> None:
