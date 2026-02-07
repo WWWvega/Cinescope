@@ -24,7 +24,7 @@ class TestMovies:
         movie = response.json()
         assert movie["id"] == movie_id, "ID фильма не совпадает"
 
-    def test_create_movie(self, api_manager):
+    def test_create_movie(self, admin_api):
         """POST /movies — проверка создания фильма"""
         movie_data = {
             "name": faker.sentence(nb_words=3),
@@ -35,19 +35,13 @@ class TestMovies:
             "published": True,
             "genreId": 1
         }
-        response = api_manager.movies_api.requester.send_request(
-            "POST",
-            "movies",
-            data=movie_data,
-            expected_status=201  # <- вот здесь меняем
-        )
-        assert response.status_code == 201, f"Ошибка: {response.text}"
-        movie = response.json()
+        movie = admin_api.movies_api.create_movie(movie_data)
         assert movie["name"] == movie_data["name"], "Имя фильма не совпадает"
 
     def test_update_movie(self, api_manager):
         """PATCH /movies/{id} — проверка обновления фильма"""
-        movies = api_manager.movies_api.get_movies().json().get("movies", [])
+        response = api_manager.movies_api.get_movies()
+        movies = response.json()["movies"]
         if not movies:
             pytest.skip("Нет фильмов для обновления")
         movie_id = movies[0]["id"]
@@ -58,12 +52,12 @@ class TestMovies:
         assert updated_movie["name"] == new_name, "Имя фильма не обновилось"
 
     def test_delete_movie(self, api_manager):
-        """DELETE /movies/{id} — проверка удаления фильма"""
-        movies = api_manager.movies_api.get_movies().json().get("movies", [])
+        response = api_manager.movies_api.get_movies()
+        movies = response.json()["movies"]
         if not movies:
             pytest.skip("Нет фильмов для удаления")
         movie_id = movies[0]["id"]
         response = api_manager.movies_api.delete_movie(movie_id)
         assert response.status_code == 200, f"Ошибка: {response.text}"
         deleted_movie = response.json()
-        assert deleted_movie["id"] == movie_id, "ID удалённого фильма не совпадает"
+        assert deleted_movie["id"] == movie_id
