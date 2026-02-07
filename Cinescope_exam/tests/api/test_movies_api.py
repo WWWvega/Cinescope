@@ -10,7 +10,7 @@ class TestMovies:
         """GET /movies — проверка получения списка фильмов"""
         response = api_manager.movies_api.get_movies()
         assert response.status_code == 200, f"Ошибка: {response.text}"
-        data = response.json()  # ← БЫЛО: api_manager.movies_api.get_movies()
+        data = response.json()
         assert "movies" in data, "Отсутствует ключ 'movies'"
 
     def test_get_movie_by_id(self, api_manager):
@@ -57,7 +57,7 @@ class TestMovies:
         if not movies:
             pytest.skip("Нет фильмов для удаления")
         movie_id = movies[0]["id"]
-        response = api_manager.movies_api.delete_movie(movie_id)  # ← СТРОКА 6!
+        response = api_manager.movies_api.delete_movie(movie_id)
         assert response.status_code == 200, f"Ошибка: {response.text}"
         deleted_movie = response.json()
         assert deleted_movie["id"] == movie_id
