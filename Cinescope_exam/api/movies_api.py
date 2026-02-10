@@ -10,7 +10,7 @@ class MoviesAPI:
     def __init__(self, session):
         self.requester = CustomRequester(session=session, base_url=API_BASE_URL)
 
-    def get_movies(self, params: Optional[Dict] = None) -> requests.Response:
+    def get_movies(self) -> requests.Response:
         response = self.requester.send_request("GET", "/movies")
         return response
 
