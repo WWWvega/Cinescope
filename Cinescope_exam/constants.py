@@ -7,8 +7,6 @@ HEADERS = {
 
 REGISTER_ENDPOINT = "/register"
 LOGIN_ENDPOINT = "/login"
-MOVIES_ENDPOINT = "/movies"
-MOVIE_ID_ENDPOINT = "/movies/{id}"
 USER_ENDPOINT = "/user/{id}"
 
 ADMIN_USERNAME = "api1@gmail.com"

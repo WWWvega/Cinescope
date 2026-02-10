@@ -1,7 +1,10 @@
 import pytest
 from faker import Faker
 
+from Cinescope_exam.utils.data_generator import DataGenerator
+
 faker = Faker()
+
 
 class TestMovies:
     """Тесты для endpoint /movies"""
@@ -24,19 +27,21 @@ class TestMovies:
         movie = response.json()
         assert movie["id"] == movie_id, "ID фильма не совпадает"
 
-    def test_create_movie(self, admin_api):
+    def test_create_movie(self, api_manager):
         """POST /movies — проверка создания фильма"""
         movie_data = {
-            "name": faker.sentence(nb_words=3),
+            "name": DataGenerator.generate_random_name(),
             "price": faker.random_int(min=100, max=500),
-            "description": faker.paragraph(nb_sentences=2),
+            "description": faker.paragraph(nb_sentences=3),
             "imageUrl": faker.image_url(),
             "location": "MSK",
             "published": True,
             "genreId": 1
         }
-        movie = admin_api.movies_api.create_movie(movie_data)
-        assert movie["name"] == movie_data["name"], "Имя фильма не совпадает"
+        response = api_manager.movies_api.create_movie(movie_data)
+        assert response.status_code == 201, f"Ошибка: {response.text}"
+        movie = response.json()
+        assert movie["name"] == movie_data["name"]
 
     def test_update_movie(self, api_manager):
         """PATCH /movies/{id} — проверка обновления фильма"""

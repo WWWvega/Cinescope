@@ -1,5 +1,6 @@
 import random
 import string
+
 from faker import Faker
 
 faker = Faker()
@@ -12,15 +13,12 @@ class DataGenerator:
         random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
         return f"kek{random_string}@gmail.com"
 
-
     @staticmethod
     def generate_random_name():
         return f"{faker.first_name()} {faker.last_name()}"
 
-
     @staticmethod
     def generate_random_password():
-
         # Гарантируем наличие хотя бы одной буквы и одной цифры
         letters = random.choice(string.ascii_letters)  # Одна буква
         digits = random.choice(string.digits)  # Одна цифра
