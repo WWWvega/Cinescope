@@ -1,14 +1,13 @@
-
-from faker import Faker
 import pytest
 import requests
-from Cinescope.constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT
-from Cinescope.custom_requester.custom_requester import CustomRequester
-from Cinescope.utils.data_generator import DataGenerator
-from Cinescope.constants import ADMIN_USERNAME, ADMIN_PASSWORD
-from Cinescope.api.api_manager import ApiManager
+from faker import Faker
+
+from Cinescope_exam.api.api_manager import ApiManager
+from Cinescope_exam.constants import BASE_URL, ADMIN_USERNAME, ADMIN_PASSWORD, LOGIN_ENDPOINT
+from Cinescope_exam.custom_requester.custom_requester import CustomRequester
 
 faker = Faker()
+
 
 @pytest.fixture(scope="function")  # ← Было "session"
 def test_user():
@@ -36,6 +35,7 @@ def registered_user(api_manager, test_user):
         test_user["id"] = data["id"]  # сохраняем ID
     return test_user
 
+
 @pytest.fixture(scope="session")
 def requester():
     """
@@ -51,19 +51,17 @@ def session():
     yield http_session
     http_session.close()
 
+
 @pytest.fixture(scope="session")
 def api_manager(session):
-    """
-    Фикстура для создания экземпляра ApiManager.
-    """
+    resp = session.post(f"{BASE_URL}{LOGIN_ENDPOINT}", json={
+        "email": ADMIN_USERNAME,
+        "password": ADMIN_PASSWORD
+    })
+    print("LOGIN RESPONSE:", resp.json())
+    assert resp.status_code == 200, f"Ошибка логина: {resp.text}"
+    token = resp.json().get("accessToken") or resp.json().get("token") or resp.json().get("access_token")
+    if not token:
+        raise ValueError(f"Токен не найден! Ответ: {resp.json()}")
+    session.headers.update({"Authorization": f"Bearer {token}"})
     return ApiManager(session)
-
-
-@pytest.fixture
-def admin_api(api_manager):
-    """
-    Авторизация админа и установка токена в заголовки.
-    Возвращает api_manager с токеном админа.
-    """
-    api_manager.auth_api.authenticate((ADMIN_USERNAME, ADMIN_PASSWORD))
-    return api_manager

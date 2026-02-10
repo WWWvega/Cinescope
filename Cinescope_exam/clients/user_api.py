@@ -1,5 +1,6 @@
-from Cinescope.custom_requester.custom_requester import CustomRequester
-from Cinescope.constants import BASE_URL
+from Cinescope_exam.constants import API_BASE_URL
+from Cinescope_exam.custom_requester.custom_requester import CustomRequester
+
 
 class UserAPI(CustomRequester):
     """
@@ -7,7 +8,7 @@ class UserAPI(CustomRequester):
     """
 
     def __init__(self, session):
-        super().__init__(session=session, base_url=BASE_URL)
+        super().__init__(session=session, base_url=API_BASE_URL)
         self.session = session
 
     def get_user_info(self, user_id, expected_status=200):
