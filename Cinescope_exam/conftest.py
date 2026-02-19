@@ -149,3 +149,15 @@ def admin_user(user_session, super_admin, creation_user_data):
     super_admin.api.user_api.create_user(admin_data)
     admin_user.api.auth_api.authenticate(admin_user.creds)
     return admin_user
+
+@pytest.fixture
+def registration_user_data():
+    random_password = DataGenerator.generate_random_password()
+
+    return {
+        "email": DataGenerator.generate_random_email(),
+        "fullName": DataGenerator.generate_random_name(),
+        "password": random_password,
+        "passwordRepeat": random_password,
+        "roles": [Roles.USER.value]
+    }
