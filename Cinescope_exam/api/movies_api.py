@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 import requests
 
@@ -29,4 +29,3 @@ class MoviesAPI:
     def delete_movie(self, movie_id: int) -> requests.Response:
         response = self.requester.send_request("DELETE", f"/movies/{movie_id}")
         return response
-

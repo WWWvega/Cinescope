@@ -2,13 +2,13 @@ import pytest
 import requests
 from faker import Faker
 
-from Cinescope_exam.utils.data_generator import DataGenerator
 from Cinescope_exam.api.api_manager import ApiManager
 from Cinescope_exam.constants import BASE_URL, ADMIN_USERNAME, ADMIN_PASSWORD, LOGIN_ENDPOINT
 from Cinescope_exam.custom_requester.custom_requester import CustomRequester
-from Cinescope_exam.resources.user_creds import SuperAdminCreds
 from Cinescope_exam.entities.user import User
 from Cinescope_exam.enums.roles import Roles
+from Cinescope_exam.resources.user_creds import SuperAdminCreds
+from Cinescope_exam.utils.data_generator import DataGenerator
 
 faker = Faker()
 
@@ -69,6 +69,7 @@ def api_manager(session):
     session.headers.update({"Authorization": f"Bearer {token}"})
     return ApiManager(session)
 
+
 @pytest.fixture
 def user_session():
     user_pool = []
@@ -84,6 +85,7 @@ def user_session():
     for user in user_pool:
         user.close_session()
 
+
 @pytest.fixture
 def super_admin(user_session):
     new_session = user_session()
@@ -96,6 +98,7 @@ def super_admin(user_session):
 
     super_admin.api.auth_api.authenticate(super_admin.creds)
     return super_admin
+
 
 @pytest.fixture(scope="function")
 def creation_user_data(test_user):
@@ -111,6 +114,7 @@ def creation_user_data(test_user):
         "roles": ["USER"]
     })
     return updated_data
+
 
 @pytest.fixture
 def common_user(user_session, super_admin, creation_user_data):
