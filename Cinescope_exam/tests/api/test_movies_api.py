@@ -143,6 +143,7 @@ class TestMovies:
 
         assert response.status_code == 200, f"SUPER_ADMIN должен мочь удалить фильм. Статус: {response.status_code}"
 
+    @pytest.mark.slow
     def test_delete_movie_admin(self, super_admin, admin_user):
         # Создаем фильм от super_admin
         movie_data = {
@@ -169,6 +170,7 @@ class TestMovies:
         # Cleanup
         super_admin.api.session.delete(url)
 
+    @pytest.mark.slow
     def test_delete_movie_common_user(self, super_admin, common_user):
         """DELETE /movies/{id} — USER НЕ может удалить фильм"""
         # Создаем фильм от super_admin
