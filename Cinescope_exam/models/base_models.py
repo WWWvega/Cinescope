@@ -1,6 +1,21 @@
 from pydantic import BaseModel, field_validator
 from typing import Optional
+from enum import Enum
 from Cinescope_exam.enums.roles import Roles
+
+
+class ProductType(str, Enum):
+    ELECTRONICS = "Электроника"
+    CLOTHING = "Одежда"
+    FOOD = "Еда"
+    BOOKS = "Книги"
+
+
+class Product(BaseModel):
+    name: str
+    price: float
+    in_stock: bool
+    product_type: ProductType
 
 
 class RegistrationUserModel(BaseModel):
