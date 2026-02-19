@@ -14,8 +14,8 @@ class MoviesAPI:
         response = self.requester.send_request("GET", "/movies")
         return response
 
-    def create_movie(self, movie_data: Dict[str, Any]) -> requests.Response:
-        response = self.requester.send_request("POST", "/movies", data=movie_data, expected_status=201)
+    def create_movie(self, movie_data: Dict[str, Any], expected_status=201) -> requests.Response:
+        response = self.requester.send_request("POST", "/movies", data=movie_data, expected_status=expected_status)
         return response
 
     def get_movie_by_id(self, movie_id: int) -> requests.Response:
