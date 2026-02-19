@@ -129,3 +129,20 @@ def common_user(user_session, super_admin, creation_user_data):
     super_admin.api.user_api.create_user(creation_user_data)
     common_user.api.auth_api.authenticate(common_user.creds)
     return common_user
+
+
+@pytest.fixture
+def admin_user(user_session, super_admin, creation_user_data):
+    new_session = user_session()
+
+
+    admin_user = User(
+        creation_user_data['email'],
+        creation_user_data['password'],
+        [Roles.ADMIN.value],
+        new_session
+    )
+
+    super_admin.api.user_api.create_user(creation_user_data)
+    admin_user.api.auth_api.authenticate(admin_user.creds)
+    return admin_user
