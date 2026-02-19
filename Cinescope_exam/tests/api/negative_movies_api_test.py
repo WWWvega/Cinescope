@@ -26,9 +26,8 @@ class TestMoviesNegative:
         assert response.status_code == 201
 
         # создаём фильм с тем же названием → ожидаем 409 Conflict
-        with pytest.raises(ValueError) as e:
-            api_manager.movies_api.create_movie(movie_data)
-        assert "409" in str(e.value)
+        response = api_manager.movies_api.create_movie(movie_data, expected_status=409)
+        assert response.status_code == 409
 
     def test_create_movie_invalid_location(self, api_manager):
         """POST /movies — проверка ошибки при неверном location"""
@@ -41,27 +40,23 @@ class TestMoviesNegative:
             "published": True,
             "genreId": 1
         }
-        with pytest.raises(ValueError) as e:
-            api_manager.movies_api.create_movie(movie_data)
-        assert "400" in str(e.value)
+        response = api_manager.movies_api.create_movie(movie_data, expected_status=400)
+        assert response.status_code == 400
 
     def test_get_movie_not_found(self, api_manager):
         """GET /movies/{id} — проверка ошибки при несуществующем ID"""
         fake_id = 999999
-        with pytest.raises(ValueError) as e:
-            api_manager.movies_api.get_movie_by_id(fake_id)
-        assert "404" in str(e.value)
+        response = api_manager.movies_api.get_movie_by_id(fake_id, expected_status=404)
+        assert response.status_code == 404
 
     def test_update_movie_not_found(self, api_manager):
         """PATCH /movies/{id} — проверка ошибки при несуществующем ID"""
         fake_id = 999999
-        with pytest.raises(ValueError) as e:
-            api_manager.movies_api.update_movie(fake_id, {"name": "New Name"})
-        assert "404" in str(e.value)
+        response = api_manager.movies_api.update_movie(fake_id, {"name": "New Name"}, expected_status=404)
+        assert response.status_code == 404
 
     def test_delete_movie_not_found(self, api_manager):
         """DELETE /movies/{id} — проверка ошибки при несуществующем ID"""
         fake_id = 999999
-        with pytest.raises(ValueError) as e:
-            api_manager.movies_api.delete_movie(fake_id)
-        assert "404" in str(e.value)
+        response = api_manager.movies_api.delete_movie(fake_id, expected_status=404)
+        assert response.status_code == 404

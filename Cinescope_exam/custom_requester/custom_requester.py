@@ -22,7 +22,7 @@ class CustomRequester:
         self.session = session
         self.base_url = base_url
         self.headers = self.base_headers.copy()
-        self.session.headers = self.base_headers.copy()
+        self.headers.update(session.headers)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
@@ -40,7 +40,8 @@ class CustomRequester:
         
         if isinstance(data, BaseModel):
             data = json.loads(data.model_dump_json(exclude_unset=True))
-        
+
+        self.headers.update(self.session.headers)
         response = self.session.request(method, url, json=data, headers=self.headers)
         if need_logging:
             self.log_request_and_response(response)
@@ -84,18 +85,15 @@ class CustomRequester:
                 f"{body}"
             )
 
-            # Обрабатываем ответ
             response_status = response.status_code
             is_success = response.ok
             response_data = response.text
 
-            # Попытка форматировать JSON
             try:
                 response_data = json.dumps(json.loads(response.text), indent=4, ensure_ascii=False)
             except json.JSONDecodeError:
-                pass  # Оставляем текст, если это не JSON
+                pass
 
-            # Логируем ответ
             self.logger.info(f"\n{'=' * 40} RESPONSE {'=' * 40}")
             if not is_success:
                 self.logger.info(

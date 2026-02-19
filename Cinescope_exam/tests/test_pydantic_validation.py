@@ -10,15 +10,17 @@ class TestPydanticValidation:
     def test_validate_test_user(self, test_user):
 
         print(f"\n Исходные данные test_user:\n{test_user}")
-        user = RegistrationUserModel(**test_user)
+        test_user_dict = test_user.model_dump() if hasattr(test_user, 'model_dump') else test_user
+        user = RegistrationUserModel(**test_user_dict)
         json_output = user.model_dump_json(exclude_unset=True, indent=2)
         print(f"\n test_user JSON (exclude_unset=True):\n{json_output}")
 
-        assert user.email == test_user['email']
+        assert user.email == test_user_dict['email']
 
     def test_validate_creation_user_data(self, creation_user_data):
         print(f"\n Исходные данные creation_user_data:\n{creation_user_data}")
-        user = RegistrationUserModel(**creation_user_data)
+        creation_user_dict = creation_user_data.model_dump() if hasattr(creation_user_data, 'model_dump') else creation_user_data
+        user = RegistrationUserModel(**creation_user_dict)
         json_output = user.model_dump_json(indent=2)
         print(f"\n creation_user_data JSON (exclude_unset=False):\n{json_output}")
 
@@ -26,11 +28,13 @@ class TestPydanticValidation:
         assert user.banned == False
 
     def test_compare_outputs(self, test_user, creation_user_data):
+        test_user_dict = test_user.model_dump() if hasattr(test_user, 'model_dump') else test_user
+        creation_user_dict = creation_user_data.model_dump() if hasattr(creation_user_data, 'model_dump') else creation_user_data
 
-        user1 = RegistrationUserModel(**test_user)
+        user1 = RegistrationUserModel(**test_user_dict)
         json1 = user1.model_dump_json(exclude_unset=True, indent=2)
 
-        user2 = RegistrationUserModel(**creation_user_data)
+        user2 = RegistrationUserModel(**creation_user_dict)
         json2 = user2.model_dump_json(indent=2)
 
         print(f"\n test_user (exclude_unset=True):\n{json1}")

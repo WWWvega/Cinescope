@@ -18,14 +18,14 @@ class MoviesAPI:
         response = self.requester.send_request("POST", "/movies", data=movie_data, expected_status=expected_status)
         return response
 
-    def get_movie_by_id(self, movie_id: int) -> requests.Response:
-        response = self.requester.send_request("GET", f"/movies/{movie_id}")
+    def get_movie_by_id(self, movie_id: int, expected_status=200) -> requests.Response:
+        response = self.requester.send_request("GET", f"/movies/{movie_id}", expected_status=expected_status)
         return response
 
-    def update_movie(self, movie_id: int, movie_data: Dict[str, Any]) -> requests.Response:
-        response = self.requester.send_request("PATCH", f"/movies/{movie_id}", data=movie_data)
+    def update_movie(self, movie_id: int, movie_data: Dict[str, Any], expected_status=200) -> requests.Response:
+        response = self.requester.send_request("PATCH", f"/movies/{movie_id}", data=movie_data, expected_status=expected_status)
         return response
 
-    def delete_movie(self, movie_id: int) -> requests.Response:
-        response = self.requester.send_request("DELETE", f"/movies/{movie_id}")
+    def delete_movie(self, movie_id: int, expected_status=200) -> requests.Response:
+        response = self.requester.send_request("DELETE", f"/movies/{movie_id}", expected_status=expected_status)
         return response
