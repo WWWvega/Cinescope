@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 from Cinescope_exam.models.base_models import RegistrationUserModel
 
 
@@ -46,3 +47,74 @@ class TestPydanticValidation:
         print(" АНАЛИЗ:")
         print("exclude_unset=True  → Убирает None поля")
         print("exclude_unset=False → Показывает все поля")
+
+
+class TestCustomValidators:
+    """Тесты кастомных валидаторов"""
+
+    def test_valid_email_and_password(self):
+        """Успешная валидация - правильный email и пароль"""
+        valid_data = {
+            "email": "user@example.com",
+            "fullName": "John Doe",
+            "password": "SecurePass123",
+            "passwordRepeat": "SecurePass123",
+            "roles": ["USER"]
+        }
+        
+        user = RegistrationUserModel(**valid_data)
+        print(f"\nУспешная валидация:\n{user.model_dump_json(indent=2)}")
+        
+        assert user.email == "user@example.com"
+        assert user.password == "SecurePass123"
+
+    def test_invalid_email_without_at(self):
+        """Ошибка валидации - email без '@'"""
+        invalid_data = {
+            "email": "userexample.com",
+            "fullName": "John Doe",
+            "password": "SecurePass123",
+            "passwordRepeat": "SecurePass123",
+            "roles": ["USER"]
+        }
+        
+        with pytest.raises(ValidationError) as exc_info:
+            RegistrationUserModel(**invalid_data)
+        
+        print(f"\nОшибка валидации email:\n{exc_info.value}")
+        assert "Email должен содержать '@'" in str(exc_info.value)
+
+    def test_invalid_password_too_short(self):
+        """Ошибка валидации - пароль меньше 8 символов"""
+        invalid_data = {
+            "email": "user@example.com",
+            "fullName": "John Doe",
+            "password": "short",
+            "passwordRepeat": "short",
+            "roles": ["USER"]
+        }
+        
+        with pytest.raises(ValidationError) as exc_info:
+            RegistrationUserModel(**invalid_data)
+        
+        print(f"\nОшибка валидации пароля:\n{exc_info.value}")
+        assert "Пароль должен содержать не меньше 8 символов" in str(exc_info.value)
+
+    def test_multiple_validation_errors(self):
+        """Ошибка валидации - несколько ошибок одновременно"""
+        invalid_data = {
+            "email": "bademail",
+            "fullName": "John Doe",
+            "password": "123",
+            "passwordRepeat": "123",
+            "roles": ["USER"]
+        }
+        
+        with pytest.raises(ValidationError) as exc_info:
+            RegistrationUserModel(**invalid_data)
+        
+        error_str = str(exc_info.value)
+        print(f"\nМножественные ошибки валидации:\n{exc_info.value}")
+        
+        assert "Email должен содержать '@'" in error_str
+        assert "Пароль должен содержать не меньше 8 символов" in error_str
