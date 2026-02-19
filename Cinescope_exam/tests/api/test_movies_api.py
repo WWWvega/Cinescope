@@ -121,3 +121,75 @@ class TestMovies:
                 if "genreId" in filters:
                     assert movie.get("genreId") == filters["genreId"], \
                         f"ID жанра {movie.get('genreId')} не совпадает с {filters['genreId']}"
+
+    def test_delete_movie_super_admin(self, super_admin):
+        """DELETE /movies/{id} — SUPER_ADMIN может удалить фильм"""
+        # Создаем фильм
+        movie_data = {
+            "name": faker.catch_phrase(),
+            "price": 500,
+            "description": faker.text(),
+            "location": "MSK",
+            "published": True,
+            "genreId": 1
+        }
+
+        created_movie = super_admin.api.movies_api.create_movie(movie_data).json()
+        movie_id = created_movie["id"]
+
+        # Удаляем
+        url = f"{API_BASE_URL}movies/{movie_id}"
+        response = super_admin.api.session.delete(url)
+
+        assert response.status_code == 200, f"SUPER_ADMIN должен мочь удалить фильм. Статус: {response.status_code}"
+
+    def test_delete_movie_admin(self, super_admin, admin_user):
+        # Создаем фильм от super_admin
+        movie_data = {
+            "name": faker.catch_phrase(),
+            "price": 500,
+            "description": faker.text(),
+            "location": "MSK",
+            "published": True,
+            "genreId": 1
+        }
+
+        created_movie = super_admin.api.movies_api.create_movie(movie_data).json()
+        movie_id = created_movie["id"]
+
+        # Пытаемся удалить от admin
+        url = f"{API_BASE_URL}movies/{movie_id}"
+        print(f"\n🔍 DELETE REQUEST: {url}")
+        print(f"🔍 USER ROLE: {admin_user.roles}")
+        response = admin_user.api.session.delete(url)
+        print(f"🔍 DELETE RESPONSE STATUS: {response.status_code}")
+
+        assert response.status_code == 403, f"ADMIN НЕ должен мочь удалить фильм. Статус: {response.status_code}"
+
+        # Cleanup
+        super_admin.api.session.delete(url)
+
+    def test_delete_movie_common_user(self, super_admin, common_user):
+        """DELETE /movies/{id} — USER НЕ может удалить фильм"""
+        # Создаем фильм от super_admin
+        movie_data = {
+            "name": faker.catch_phrase(),
+            "price": 500,
+            "description": faker.text(),
+            "location": "MSK",
+            "published": True,
+            "genreId": 1
+        }
+
+        created_movie = super_admin.api.movies_api.create_movie(movie_data).json()
+        movie_id = created_movie["id"]
+
+        # Пытаемся удалить от common_user
+        url = f"{API_BASE_URL}movies/{movie_id}"
+        response = common_user.api.session.delete(url)
+        print(f"🔍 DELETE RESPONSE STATUS: {response.status_code}")
+
+        assert response.status_code == 403, f"USER НЕ должен мочь удалить фильм. Статус: {response.status_code}"
+
+        # Cleanup
+        super_admin.api.session.delete(url)

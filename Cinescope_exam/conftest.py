@@ -135,6 +135,9 @@ def common_user(user_session, super_admin, creation_user_data):
 def admin_user(user_session, super_admin, creation_user_data):
     new_session = user_session()
 
+    # Изменяем роль на ADMIN для создания через API
+    admin_data = creation_user_data.copy()
+    admin_data['roles'] = ["ADMIN"]
 
     admin_user = User(
         creation_user_data['email'],
@@ -143,6 +146,6 @@ def admin_user(user_session, super_admin, creation_user_data):
         new_session
     )
 
-    super_admin.api.user_api.create_user(creation_user_data)
+    super_admin.api.user_api.create_user(admin_data)
     admin_user.api.auth_api.authenticate(admin_user.creds)
     return admin_user
