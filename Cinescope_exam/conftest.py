@@ -15,15 +15,16 @@ faker = Faker()
 
 @pytest.fixture
 def test_user():
+    from Cinescope_exam.models.base_models import TestUser
     random_password = DataGenerator.generate_random_password()
 
-    return {
-        "email": DataGenerator.generate_random_email(),
-        "fullName": DataGenerator.generate_random_name(),
-        "password": random_password,
-        "passwordRepeat": random_password,
-        "roles": [Roles.USER.value]
-    }
+    return TestUser(
+        email=DataGenerator.generate_random_email(),
+        fullName=DataGenerator.generate_random_name(),
+        password=random_password,
+        passwordRepeat=random_password,
+        roles=[Roles.USER]
+    )
 
 
 @pytest.fixture
@@ -32,11 +33,9 @@ def registered_user(api_manager, test_user):
     Регистрирует пользователя через API и возвращает данные с id.
     Если пользователь уже зарегистрирован, возвращает существующий.
     """
-    if "id" not in test_user:
-        response = api_manager.auth_api.register_user(test_user)
-        data = response.json()
-        test_user["id"] = data["id"]  # сохраняем ID
-    return test_user
+    from Cinescope_exam.models.base_models import RegisterUserResponse
+    response = api_manager.auth_api.register_user(test_user)
+    return RegisterUserResponse(**response.json())
 
 
 @pytest.fixture(scope="session")
@@ -102,18 +101,18 @@ def super_admin(user_session):
 
 @pytest.fixture(scope="function")
 def creation_user_data(test_user):
-    updated_data = test_user.copy()
+    from Cinescope_exam.models.base_models import TestUser
     valid_password = DataGenerator.generate_random_password()
-    updated_data.update({
-        "password": valid_password,
-        "passwordRepeat": valid_password,
-        "email": DataGenerator.generate_random_email(),
-        "fullName": DataGenerator.generate_random_name(),
-        "verified": True,
-        "banned": False,
-        "roles": ["USER"]
-    })
-    return updated_data
+    
+    return TestUser(
+        email=DataGenerator.generate_random_email(),
+        fullName=DataGenerator.generate_random_name(),
+        password=valid_password,
+        passwordRepeat=valid_password,
+        verified=True,
+        banned=False,
+        roles=[Roles.USER]
+    )
 
 
 @pytest.fixture
@@ -121,8 +120,8 @@ def common_user(user_session, super_admin, creation_user_data):
     new_session = user_session()
 
     common_user = User(
-        creation_user_data['email'],
-        creation_user_data['password'],
+        creation_user_data.email,
+        creation_user_data.password,
         [Roles.USER.value],
         new_session)
 
@@ -133,15 +132,23 @@ def common_user(user_session, super_admin, creation_user_data):
 
 @pytest.fixture
 def admin_user(user_session, super_admin, creation_user_data):
+    from Cinescope_exam.models.base_models import TestUser
     new_session = user_session()
 
     # Изменяем роль на ADMIN для создания через API
-    admin_data = creation_user_data.copy()
-    admin_data['roles'] = ["ADMIN"]
+    admin_data = TestUser(
+        email=creation_user_data.email,
+        fullName=creation_user_data.fullName,
+        password=creation_user_data.password,
+        passwordRepeat=creation_user_data.passwordRepeat,
+        verified=creation_user_data.verified,
+        banned=creation_user_data.banned,
+        roles=[Roles.ADMIN]
+    )
 
     admin_user = User(
-        creation_user_data['email'],
-        creation_user_data['password'],
+        creation_user_data.email,
+        creation_user_data.password,
         [Roles.ADMIN.value],
         new_session
     )
@@ -152,12 +159,13 @@ def admin_user(user_session, super_admin, creation_user_data):
 
 @pytest.fixture
 def registration_user_data():
+    from Cinescope_exam.models.base_models import TestUser
     random_password = DataGenerator.generate_random_password()
 
-    return {
-        "email": DataGenerator.generate_random_email(),
-        "fullName": DataGenerator.generate_random_name(),
-        "password": random_password,
-        "passwordRepeat": random_password,
-        "roles": [Roles.USER.value]
-    }
+    return TestUser(
+        email=DataGenerator.generate_random_email(),
+        fullName=DataGenerator.generate_random_name(),
+        password=random_password,
+        passwordRepeat=random_password,
+        roles=[Roles.USER]
+    )

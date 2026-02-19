@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from pydantic import BaseModel
 
 
 class CustomRequester:
@@ -21,6 +22,7 @@ class CustomRequester:
         self.session = session
         self.base_url = base_url
         self.headers = self.base_headers.copy()
+        self.session.headers = self.base_headers.copy()
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
@@ -35,6 +37,10 @@ class CustomRequester:
         :return: Объект ответа requests.Response.
         """
         url = f"{self.base_url}{endpoint}"
+        
+        if isinstance(data, BaseModel):
+            data = json.loads(data.model_dump_json(exclude_unset=True))
+        
         response = self.session.request(method, url, json=data, headers=self.headers)
         if need_logging:
             self.log_request_and_response(response)
