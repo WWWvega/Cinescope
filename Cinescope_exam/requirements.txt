@@ -2,3 +2,8 @@ requests
 pytest
 faker
 pydantic
+allure-pytest
+pytest-check
+pytest-rerunfailures
+sqlalchemy
+pytest-mock

@@ -1,4 +1,5 @@
 import pytest
+import allure
 from faker import Faker
 
 from Cinescope_exam.utils.data_generator import DataGenerator
@@ -7,15 +8,27 @@ from Cinescope_exam.constants import BASE_URL, API_BASE_URL, ADMIN_USERNAME, ADM
 faker = Faker()
 
 
+@allure.epic("Cinescope")
+@allure.feature("Movies API")
 class TestMovies:
     """Тесты для endpoint /movies"""
 
+    @allure.story("Получение списка фильмов")
+    @allure.title("GET /movies - Успешное получение списка всех фильмов")
+    @allure.description("Проверяем, что API возвращает список фильмов со статусом 200")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_get_movies(self, api_manager):
         """GET /movies — проверка получения списка фильмов"""
-        response = api_manager.movies_api.get_movies()
-        assert response.status_code == 200, f"Ошибка: {response.text}"
-        data = response.json()
-        assert "movies" in data, "Отсутствует ключ 'movies'"
+        with allure.step("Отправка GET запроса на /movies"):
+            response = api_manager.movies_api.get_movies()
+        
+        with allure.step("Проверка статус кода 200"):
+            assert response.status_code == 200, f"Ошибка: {response.text}"
+        
+        with allure.step("Проверка наличия ключа 'movies' в ответе"):
+            data = response.json()
+            assert "movies" in data, "Отсутствует ключ 'movies'"
+            allure.attach(str(data), name="Response Data", attachment_type=allure.attachment_type.JSON)
 
     def test_get_movie_by_id(self, api_manager):
         """GET /movies/{id} — проверка получения фильма по ID"""
@@ -28,21 +41,33 @@ class TestMovies:
         movie = response.json()
         assert movie["id"] == movie_id, "ID фильма не совпадает"
 
+    @allure.story("Создание фильма")
+    @allure.title("POST /movies - Успешное создание нового фильма")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_create_movie(self, api_manager):
         """POST /movies — проверка создания фильма"""
-        movie_data = {
-            "name": DataGenerator.generate_random_name(),
-            "price": faker.random_int(min=100, max=500),
-            "description": faker.paragraph(nb_sentences=3),
-            "imageUrl": faker.image_url(),
-            "location": "MSK",
-            "published": True,
-            "genreId": 1
-        }
-        response = api_manager.movies_api.create_movie(movie_data)
-        assert response.status_code == 201, f"Ошибка: {response.text}"
-        movie = response.json()
-        assert movie["name"] == movie_data["name"]
+        with allure.step("Подготовка данных для создания фильма"):
+            movie_data = {
+                "name": DataGenerator.generate_random_name(),
+                "price": faker.random_int(min=100, max=500),
+                "description": faker.paragraph(nb_sentences=3),
+                "imageUrl": faker.image_url(),
+                "location": "MSK",
+                "published": True,
+                "genreId": 1
+            }
+            allure.attach(str(movie_data), name="Movie Data", attachment_type=allure.attachment_type.JSON)
+        
+        with allure.step("Отправка POST запроса на /movies"):
+            response = api_manager.movies_api.create_movie(movie_data)
+        
+        with allure.step("Проверка статус кода 201"):
+            assert response.status_code == 201, f"Ошибка: {response.text}"
+        
+        with allure.step("Проверка соответствия имени фильма"):
+            movie = response.json()
+            assert movie["name"] == movie_data["name"]
+            allure.attach(str(movie), name="Created Movie", attachment_type=allure.attachment_type.JSON)
 
     def test_update_movie(self, api_manager):
         """PATCH /movies/{id} — проверка обновления фильма"""
@@ -122,26 +147,31 @@ class TestMovies:
                     assert movie.get("genreId") == filters["genreId"], \
                         f"ID жанра {movie.get('genreId')} не совпадает с {filters['genreId']}"
 
+    @allure.story("Авторизация и права доступа")
+    @allure.title("DELETE /movies/{id} - SUPER_ADMIN может удалить фильм")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_movie_super_admin(self, super_admin):
         """DELETE /movies/{id} — SUPER_ADMIN может удалить фильм"""
-        # Создаем фильм
-        movie_data = {
-            "name": faker.catch_phrase(),
-            "price": 500,
-            "description": faker.text(),
-            "location": "MSK",
-            "published": True,
-            "genreId": 1
-        }
+        with allure.step("Создание тестового фильма"):
+            movie_data = {
+                "name": faker.catch_phrase(),
+                "price": 500,
+                "description": faker.text(),
+                "location": "MSK",
+                "published": True,
+                "genreId": 1
+            }
+            allure.attach(str(movie_data), name="Movie Data", attachment_type=allure.attachment_type.JSON)
+            created_movie = super_admin.api.movies_api.create_movie(movie_data).json()
+            movie_id = created_movie["id"]
+            allure.attach(str(movie_id), name="Created Movie ID", attachment_type=allure.attachment_type.TEXT)
 
-        created_movie = super_admin.api.movies_api.create_movie(movie_data).json()
-        movie_id = created_movie["id"]
+        with allure.step(f"Удаление фильма ID={movie_id} от SUPER_ADMIN"):
+            url = f"{API_BASE_URL}movies/{movie_id}"
+            response = super_admin.api.session.delete(url)
 
-        # Удаляем
-        url = f"{API_BASE_URL}movies/{movie_id}"
-        response = super_admin.api.session.delete(url)
-
-        assert response.status_code == 200, f"SUPER_ADMIN должен мочь удалить фильм. Статус: {response.status_code}"
+        with allure.step("Проверка успешного удаления (статус 200)"):
+            assert response.status_code == 200, f"SUPER_ADMIN должен мочь удалить фильм. Статус: {response.status_code}"
 
     @pytest.mark.slow
     def test_delete_movie_admin(self, super_admin, admin_user):
