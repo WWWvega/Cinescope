@@ -1,7 +1,11 @@
 import pytest
 import requests
 from faker import Faker
-
+import pytest
+from playwright.sync_api import sync_playwright
+from pathlib import Path
+from datetime import datetime
+from Cinescope_exam.methods import Tools  # Используем ваш существующий класс
 from Cinescope_exam.api.api_manager import ApiManager
 from Cinescope_exam.constants import BASE_URL, ADMIN_USERNAME, ADMIN_PASSWORD, LOGIN_ENDPOINT
 from Cinescope_exam.custom_requester.custom_requester import CustomRequester
@@ -12,6 +16,7 @@ from Cinescope_exam.utils.data_generator import DataGenerator
 
 faker = Faker()
 
+DEFAULT_UI_TIMEOUT = 30000
 
 @pytest.fixture
 def test_user():
@@ -169,3 +174,26 @@ def registration_user_data():
         passwordRepeat=random_password,
         roles=[Roles.USER]
     )
+
+@pytest.fixture(scope="session")
+def browser(playwright):
+    browser = playwright.chromium.launch(headless=False)
+    yield browser
+    browser.close()
+
+@pytest.fixture(scope="function")
+def context(browser):
+    context = browser.new_context()
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)
+    context.set_default_timeout(DEFAULT_UI_TIMEOUT)
+    yield context
+    log_name = f"trace_{Tools.get_timestamp()}.zip"
+    trace_path = Tools.files_dir('playwright_trace', log_name)
+    context.tracing.stop(path=trace_path)
+    context.close()
+
+@pytest.fixture(scope="function")
+def page(context):
+    page = context.new_page()
+    yield page
+    page.close()
