@@ -169,3 +169,8 @@ def registration_user_data():
         passwordRepeat=random_password,
         roles=[Roles.USER]
     )
+
+
+@pytest.fixture(scope="session")
+def browser_type_launch_args():
+    return {"headless": False}

@@ -7,3 +7,6 @@ pytest-check
 pytest-rerunfailures
 sqlalchemy
 pytest-mock
+playwright
+pytest-playwright
+allure-pytest
