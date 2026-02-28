@@ -61,7 +61,7 @@ def api_manager(session):
         "password": ADMIN_PASSWORD
     })
     print("LOGIN RESPONSE:", resp.json())
-    assert resp.status_code == 200, f"Ошибка логина: {resp.text}"
+    assert resp.status_code == 201, f"Ошибка логина: {resp.text}"
     token = resp.json().get("accessToken") or resp.json().get("token") or resp.json().get("access_token")
     if not token:
         raise ValueError(f"Токен не найден! Ответ: {resp.json()}")
