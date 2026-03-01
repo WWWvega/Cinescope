@@ -3,7 +3,7 @@ import allure
 import pytest
 import time
 from datetime import datetime
-from Cinescope_exam.models.demoqa_page_objects_with_allure import DemoQAPracticeFormPage
+from Cinescope_exam.models.page_object_models import DemoQAPracticeFormPage
 
 
 @allure.epic("Тестирование UI DemoQA")

@@ -1,7 +1,7 @@
 from playwright.sync_api import Page, expect
 import allure
 import pytest
-from Cinescope_exam.models.demoqa_page_objects_with_allure import DemoQARadioButtonPage, DemoQACheckBoxPage, DemoQADynamicPropertiesPage
+from Cinescope_exam.models.page_object_models import DemoQARadioButtonPage, DemoQACheckBoxPage, DemoQADynamicPropertiesPage
 
 
 @allure.epic("Тестирование UI DemoQA")

@@ -2,7 +2,7 @@ from playwright.sync_api import Page, expect
 import allure
 import pytest
 import time
-from Cinescope_exam.models.demoqa_page_objects_with_allure import DemoQAWebTablesPage
+from Cinescope_exam.models.page_object_models import DemoQAWebTablesPage
 
 
 @allure.epic("Тестирование UI DemoQA")
