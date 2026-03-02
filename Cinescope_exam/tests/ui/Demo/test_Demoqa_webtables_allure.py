@@ -3,7 +3,10 @@ import allure
 import pytest
 import time
 from Cinescope_exam.models.page_object_models import DemoQAWebTablesPage
-
+from Cinescope_exam.utils.data_generator import DataGenerator
+import random
+from faker import Faker
+faker = Faker('ru_RU')
 
 @allure.epic("Тестирование UI DemoQA")
 @allure.feature("Web Tables")
@@ -21,7 +24,31 @@ class TestWebTables:
         with allure.step("Проверка что модальная форма появилась"):
             modal_form = page.locator(webtables_page.modal_form)
             expect(modal_form).to_be_visible()
-        
-        webtables_page.add_record("Иван", "Иванов", "ivan@test.com", "30", "50000", "QA")
-        
-        time.sleep(3)
+
+        test_data = {
+            "first_name": faker.first_name(),
+            "last_name": faker.last_name(),
+            "email": DataGenerator.generate_random_email(),
+            "age": str(random.randint(18, 65)),
+            "salary": str(random.randint(30000, 150000)),
+            "department": random.choice(["QA", "Dev", "Marketing", "Sales"])
+        }
+
+        allure.attach(str(test_data), "Тестовые данные", allure.attachment_type.TEXT)
+
+        webtables_page.add_record(
+            test_data["first_name"],
+            test_data["last_name"],
+            test_data["email"],
+            test_data["age"],
+            test_data["salary"],
+            test_data["department"]
+        )
+
+        with allure.step("Проверка что модальное окно закрылось"):
+            expect(modal_form).not_to_be_visible(timeout=5000)
+
+        with allure.step("Проверка что запись добавлена в таблицу"):
+            table_row = page.locator(f"text={test_data['email']}")
+            expect(table_row).to_be_visible()
+

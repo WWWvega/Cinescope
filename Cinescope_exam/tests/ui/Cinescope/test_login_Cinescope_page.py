@@ -16,15 +16,12 @@ class TestloginPage:
            login_page = CinescopLoginPage(page)# Создаем объект страницы Login
 
            login_page.open()
-           login_page.login(registered_user.email, "ABC45678") # Осуществяем вход
+           login_page.login(registered_user.email, registered_user.password) # Осуществяем вход
 
            login_page.assert_was_redirect_to_home_page() # Проверка редиректа на домашнюю страницу
            login_page.make_screenshot_and_attach_to_allure() # Прикрепляем скриншот
            login_page.assert_allert_was_pop_up() # Проверка появления и исчезновения алерта
 
-           # Пауза для визуальной проверки (нужно удалить в реальном тестировании)
-           time.sleep(5)
-           browser.close()
 
    @allure.title("Проверка сообщения об ошибке при вводе неверных данных")
    def test_login_with_invalid_credentials(self, page):
@@ -37,5 +34,3 @@ class TestloginPage:
       login_page.assert_error_message_was_pop_up()  # Проверка появления и исчезновения сообщения об ошибке
       login_page.make_screenshot_and_attach_to_allure()
 
-      # Пауза для визуальной проверки
-      time.sleep(5)

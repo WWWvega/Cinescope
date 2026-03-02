@@ -30,6 +30,4 @@ class TestRegisterPage:
            register_page.make_screenshot_and_attach_to_allure()
            register_page.assert_allert_was_pop_up()
 
-
-           time.sleep(5)
            browser.close()

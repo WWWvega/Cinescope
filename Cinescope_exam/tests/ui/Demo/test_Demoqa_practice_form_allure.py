@@ -23,13 +23,11 @@ class TestPracticeForm:
             assert actual_value == today
         
         practice_form_page.fill_form("Иван", "Иванов", "ivan@test.com", "9876543210", "123 Test Street")
-        time.sleep(0.5)
-        
+
         practice_form_page.select_hobbies()
         
         practice_form_page.select_state_and_city("NCR", "Delhi")
-        time.sleep(0.5)
-        
+
         with allure.step("Проверка footer"):
             footer_text = page.locator(practice_form_page.footer).text_content()
             assert "TOOLSQA.COM" in footer_text
@@ -37,10 +35,10 @@ class TestPracticeForm:
         practice_form_page.submit_form()
         
         with allure.step("Проверка что модальное окно появилось"):
-            time.sleep(2)
+
             modal = page.locator(practice_form_page.modal_content)
             assert modal.is_visible()
         
         with allure.step("Закрытие модального окна"):
             page.locator("#closeLargeModal").click()
-            time.sleep(1)
+
