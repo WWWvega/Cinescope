@@ -34,3 +34,11 @@ class DataGenerator:
         random.shuffle(password)
 
         return ''.join(password)
+
+    @staticmethod
+    def generate_phone_number():
+        return ''.join(random.choices(string.digits, k=10))
+
+    @staticmethod
+    def generate_address():
+        return faker.address().replace('\n', ', ')
