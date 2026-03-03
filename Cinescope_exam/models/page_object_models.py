@@ -1,5 +1,6 @@
 from playwright.sync_api import Page
 import allure
+from Cinescope_exam.constants import UI_BASE_URL
 
 
 class PageAction:
@@ -50,32 +51,10 @@ class PageAction:
             notification_locator.wait_for(state="hidden")
             assert notification_locator.is_visible() == False, "Уведомление не исчезло"
 
-class BasePage(PageAction):
-
+class CinescopRegisterPage(PageAction):
     def __init__(self, page: Page):
         super().__init__(page)
-        self.home_url = "https://dev-cinescope.coconutqa.ru/"
-
-        # Общие локаторы для всех страниц на сайте
-        self.home_button = "a[href='/' and text()='Cinescope']"
-        self.all_movies_button = "a[href='/movies' and text()='Все фильмы']"
-
-    @allure.step("Переход на главную страницу, из шапки сайта")
-    def go_to_home_page(self):
-        self.click_element(self.home_button)
-        self.wait_redirect_for_url(self.home_url)
-
-    @allure.step("Переход на страницу 'Все фильмы, из шапки сайта'")
-    def go_to_all_movies(self):
-        self.click_element(self.all_movies_button)
-        self.wait_redirect_for_url(f"{self.home_url}movies")
-
-
-class CinescopRegisterPage(BasePage):
-
-    def __init__(self, page: Page):
-        super().__init__(page)
-        self.url = f"{self.home_url}register"
+        self.url = f"{UI_BASE_URL}register"
 
         # Локаторы элементов
         self.full_name_input = "input[name='fullName']"
@@ -99,18 +78,17 @@ class CinescopRegisterPage(BasePage):
 
     @allure.step("Проверка редиректа на страницу логина")
     def assert_was_redirect_to_login_page(self):
-        self.wait_redirect_for_url(f"{self.home_url}login")
+        self.wait_redirect_for_url(f"{UI_BASE_URL}login")
 
     @allure.step("Проверка появления алерта о подтверждении почты")
     def assert_allert_was_pop_up(self):
         self.check_pop_up_element_with_text("Подтвердите свою почту")
 
 
-class CinescopLoginPage(BasePage):
-
+class CinescopLoginPage(PageAction):
     def __init__(self, page: Page):
         super().__init__(page)
-        self.url = f"{self.home_url}login"
+        self.url = f"{UI_BASE_URL}login"
 
         # Локаторы элементов
         self.email_input = "input[name='email']"
@@ -131,7 +109,7 @@ class CinescopLoginPage(BasePage):
 
     @allure.step("Проверка редиректа на домашнюю страницу")
     def assert_was_redirect_to_home_page(self):
-        self.wait_redirect_for_url(self.home_url)
+        self.wait_redirect_for_url(UI_BASE_URL)
 
     @allure.step("Проверка появления алерта об успешном входе")
     def assert_allert_was_pop_up(self):
